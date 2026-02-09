@@ -1,5 +1,9 @@
-import {RegisterModal} from "@/features/register";
+import {AuthModal, RegisterForm} from "@/features/auth";
 
-export default function modal() {
-    return <RegisterModal />
+export default function () {
+    return (
+        <AuthModal>
+            <RegisterForm />
+        </AuthModal>
+    )
 }

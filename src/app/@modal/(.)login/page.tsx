@@ -1,5 +1,9 @@
-import {LoginModal} from "@/features/login";
+import {AuthModal, LoginForm} from "@/features/auth";
 
-export default function modal() {
-    return <LoginModal />
+export default function () {
+    return (
+        <AuthModal>
+            <LoginForm />
+        </AuthModal>
+    )
 }
