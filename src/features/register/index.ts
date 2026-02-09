@@ -1,0 +1,1 @@
+export {RegisterModal} from './ui/register-modal'

@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import "tailwindcss";
+
+@layer base {
+    :where(
+    a[href],
+    button,
+    button,
+    textarea,
+    select,
+    summary,
+    [role="button"],
+    [role="tab"],
+    [role="menuitem"],
+    [tabindex]:not([tabindex="-1"])
+  ):focus-visible {
+        @apply
+        outline-none
+        focus-visible:ring-2
+        focus-visible:ring-[#FE5F00]/40
+        focus-visible:ring-offset-2;
+    }
+}
+
+body {
+    font-family: var(--font-nunito);
+}
