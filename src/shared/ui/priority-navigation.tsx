@@ -12,7 +12,8 @@ import {
     useState,
     useRef,
 } from "react"
-import { cn } from "@/shared/utils"
+import {cn} from "@/shared/utils"
+import {ContextException} from "@/shared/exceptions";
 
 // -----------------------------------------------------------------------------
 // TYPES
@@ -68,7 +69,7 @@ export const usePriorityContext = () => {
     const ctx = useContext(PriorityContext)
 
     if (!ctx) {
-        throw new Error("usePriorityContext must be used within PriorityContext")
+        throw new ContextException('usePriorityContext', 'PriorityContext')
     }
 
     return ctx
@@ -137,7 +138,7 @@ export const usePriorityNavigation = <T, >({
         return () => observer.disconnect()
     }, [calculate, containerRef])
 
-    return { visibleItems, overflowItems, isRedy }
+    return {visibleItems, overflowItems, isRedy}
 }
 
 // -----------------------------------------------------------------------------
@@ -153,9 +154,9 @@ const PriorityMain = <T, >({
                                style,
                                ...rest
                            }: PriorityMainProps<T>) => {
-    const { containerRef, itemsRef, moreButtonRef } = usePriorityContext()
+    const {containerRef, itemsRef, moreButtonRef} = usePriorityContext()
 
-    const { visibleItems, overflowItems, isRedy } = usePriorityNavigation<T>({
+    const {visibleItems, overflowItems, isRedy} = usePriorityNavigation<T>({
         items,
         containerRef,
         itemsRef,
@@ -222,14 +223,14 @@ const PriorityMain = <T, >({
 // PRIORITY PROVIDER
 // -----------------------------------------------------------------------------
 
-const PriorityProvider = ({ children }: { children: ReactNode }) => {
+const PriorityProvider = ({children}: { children: ReactNode }) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const moreButtonRef = useRef<HTMLButtonElement>(null)
     const itemsRef = useRef<Map<string, HTMLElement>>(new Map())
 
     return (
         <PriorityContext.Provider
-            value={{ containerRef, moreButtonRef, itemsRef }}
+            value={{containerRef, moreButtonRef, itemsRef}}
         >
             {children}
         </PriorityContext.Provider>

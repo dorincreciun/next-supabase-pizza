@@ -1,5 +1,4 @@
-export type AuthModalView =
-    | 'login'
-    | 'register'
-
-export type AuthModalState = AuthModalView | null;
+export interface RegisterFormProps {
+    email: string;
+    password: string
+}

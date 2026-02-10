@@ -1,26 +1,58 @@
 'use client'
 
 import {Button, InputElement} from "@/shared/ui";
-import {useActionState, useEffect} from "react";
-import {register, RegisterState} from "../api/register-action";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
+import {SubmitHandler, useForm} from "react-hook-form";
+import {useEffect} from "react";
+import {registerUser} from "@/features/auth/api/register-action";
+import {RegisterFormProps} from "@/features/auth/model/types";
 
-const initialState: RegisterState = {
-    success: false,
-    error: null,
-};
 
 export const RegisterForm = () => {
     const router = useRouter();
-    const [state, formAction, isPending] = useActionState(register, initialState);
+
+    const {
+        register,
+        handleSubmit,
+        setError,
+        formState: {
+            isSubmitting,
+            isSubmitSuccessful,
+            errors,
+        }
+    } = useForm<RegisterFormProps>({
+        mode: "onSubmit",
+        reValidateMode: "onChange",
+        defaultValues: {
+            email: '',
+            password: '',
+        }
+    })
 
     useEffect(() => {
-        router.back()
-        if (state.success) {
+        if (isSubmitSuccessful) {
             router.back()
         }
-    }, [state, router]);
+    }, [isSubmitSuccessful, router]);
+
+
+    const onSubmit: SubmitHandler<RegisterFormProps> = async (props) => {
+        const {data, error} = await registerUser(props)
+
+        if(error) {
+            setError("root",{
+                type: "server",
+                message: error.message
+            })
+            return
+        } else if(!data.user) {
+            setError("root",{
+                type: "server",
+                message: "Email-ul dat a fost deja inregistrat!"
+            })
+        }
+    }
 
     return (
         <>
@@ -31,17 +63,18 @@ export const RegisterForm = () => {
                 </p>
             </div>
             <form
-                action={formAction}
+                onSubmit={handleSubmit(onSubmit)}
                 className={'space-y-5'}
             >
+                {errors.root?.message}
                 <InputElement
                     variant="primary"
                     inputSize="md"
                 >
                     <InputElement.Input
                         type="email"
-                        name={'email'}
-                        placeholder="Email"
+                        placeholder={'Email'}
+                        {...register('email', {required: true})}
                     />
                 </InputElement>
                 <InputElement
@@ -50,12 +83,12 @@ export const RegisterForm = () => {
                 >
                     <InputElement.Input
                         type="password"
-                        name={'password'}
-                        placeholder="Password"
+                        placeholder={'Password'}
+                        {...register('password', {required: true})}
                     />
                 </InputElement>
                 <Button
-                    isLoading={isPending}
+                    isLoading={isSubmitting}
                     className={'w-full'}
                     type={'submit'}
                 >

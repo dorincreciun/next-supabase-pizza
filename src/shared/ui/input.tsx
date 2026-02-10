@@ -5,11 +5,26 @@ import { createContext, useContext, useMemo, useRef, forwardRef } from "react"
 import { cn } from "@/shared/utils"
 import { cva, type VariantProps } from "class-variance-authority"
 
-/* --- Context --- */
+// --- TYPES ---
+
 type InputContextValue = {
     inputRef: React.RefObject<HTMLInputElement | null>
     focusInput: () => void
 }
+
+interface InputRootProps
+    extends React.HTMLAttributes<HTMLDivElement>,
+        VariantProps<typeof inputContainerVariants> {
+    error?: boolean
+}
+
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+
+interface InputAddonProps extends React.HTMLAttributes<HTMLDivElement> {
+    focusOnClick?: boolean
+}
+
+// --- CONTEXT ---
 
 const InputContext = createContext<InputContextValue | null>(null)
 
@@ -21,7 +36,8 @@ const useInputContext = () => {
     return ctx
 }
 
-/* --- Styles --- */
+// --- STYLES ---
+
 const inputContainerVariants = cva(
     [
         "flex items-center gap-2.5 overflow-hidden",
@@ -57,14 +73,7 @@ const inputContainerVariants = cva(
     }
 )
 
-/* --- Components --- */
-
-// 1. Root Provider
-interface InputRootProps
-    extends React.HTMLAttributes<HTMLDivElement>,
-        VariantProps<typeof inputContainerVariants> {
-    error?: boolean
-}
+// --- COMPONENTS ---
 
 const InputRoot = ({
                        children,
@@ -95,14 +104,10 @@ const InputRoot = ({
     )
 }
 
-// 2. Main Input field
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
-
 const Input = forwardRef<HTMLInputElement, InputProps>(
     ({ className, ...props }, forwardedRef) => {
         const { inputRef } = useInputContext()
 
-        // Combinăm ref-ul din context cu cel primit prin props (pentru hook-form)
         const setRefs = (node: HTMLInputElement) => {
             (inputRef as React.MutableRefObject<HTMLInputElement | null>).current = node
             if (typeof forwardedRef === "function") {
@@ -128,11 +133,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     }
 )
 Input.displayName = "InputElement.Input"
-
-// 3. Addon (Prefix/Suffix)
-interface InputAddonProps extends React.HTMLAttributes<HTMLDivElement> {
-    focusOnClick?: boolean
-}
 
 const InputAddon = ({
                         children,
@@ -162,7 +162,7 @@ const InputAddon = ({
     )
 }
 
-/* --- API Export --- */
+// --- EXPORTS ---
 export const InputElement = Object.assign(InputRoot, {
     Input,
     Addon: InputAddon,

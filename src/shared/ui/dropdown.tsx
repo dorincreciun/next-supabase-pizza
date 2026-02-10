@@ -8,6 +8,7 @@ import {
     useContext,
     useState,
 } from "react"
+import {ContextException} from "@/shared/exceptions";
 
 /* Dropdown Context */
 interface DropdownContextProps {
@@ -22,7 +23,7 @@ const DropdownContext = createContext<DropdownContextProps | null>(null)
 const useDropdownContext = () => {
     const ctx = useContext(DropdownContext)
     if (!ctx) {
-        throw new Error("useDropdownContext must be used within DropdownContext")
+        throw new ContextException('useDropdownContext', 'DropdownContext')
     }
     return ctx
 }

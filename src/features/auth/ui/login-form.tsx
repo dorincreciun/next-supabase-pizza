@@ -3,7 +3,7 @@
 import {InputElement} from "@/shared/ui/input";
 import {Button} from "@/shared/ui";
 import {useActionState, useEffect} from "react";
-import {register, RegisterState} from "@/features/auth/api/register-action";
+import {RegisterState} from "@/features/auth/api/register-action";
 import {login} from "@/features/auth/api/login-action";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
@@ -19,10 +19,9 @@ export const LoginForm = () => {
 
     useEffect(() => {
         if (state.success) {
-            router.refresh();
             router.back()
         }
-    }, [state.success, router]);
+    }, [state, router]);
 
     return (
         <>

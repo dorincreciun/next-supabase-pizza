@@ -1,30 +1,28 @@
+"use client"
+
+import * as React from "react"
 import { ButtonHTMLAttributes } from "react"
+import { useFormStatus } from "react-dom"
 import { cva, VariantProps } from "class-variance-authority"
-import { cn } from "@/shared/utils"
 import { Loader } from "lucide-react"
+import { cn } from "@/shared/utils"
+
+// --- STYLES (CVA) ---
 
 const buttonCva = cva(
     [
         "relative inline-flex items-center justify-center gap-2",
         "font-medium select-none outline-none",
         "rounded-xl cursor-pointer",
-
-        // States
         "transition-all duration-150 ease-out",
         "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",
-
-        // Interactive feedback
         "active:scale-[0.98]",
         "focus-visible:ring-2 focus-visible:ring-offset-2",
-
-        // Shine effect
         "overflow-hidden",
         "before:absolute before:inset-0 before:-translate-x-full",
         "before:bg-linear-to-r before:from-transparent before:via-white/20 before:to-transparent",
         "before:transition-transform before:duration-700",
         "enabled:hover:before:translate-x-full",
-
-        // Loading state
         "data-[loading=true]:cursor-wait",
     ],
     {
@@ -55,7 +53,6 @@ const buttonCva = cva(
             kind: "solid",
         },
         compoundVariants: [
-            // Primary
             {
                 color: "primary",
                 kind: "solid",
@@ -96,8 +93,6 @@ const buttonCva = cva(
                     "focus-visible:ring-[#FE5F00]/50",
                 ],
             },
-
-            // Secondary
             {
                 color: "secondary",
                 kind: "solid",
@@ -138,8 +133,6 @@ const buttonCva = cva(
                     "focus-visible:ring-gray-300",
                 ],
             },
-
-            // Tertiary
             {
                 color: "tertiary",
                 kind: "solid",
@@ -184,11 +177,15 @@ const buttonCva = cva(
     },
 )
 
+// --- TYPES ---
+
 type NativeButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "color">
 
 interface ButtonProps extends NativeButtonProps, VariantProps<typeof buttonCva> {
     isLoading?: boolean
 }
+
+// --- COMPONENT ---
 
 export const Button = ({
                            className,
@@ -201,30 +198,32 @@ export const Button = ({
                            onlyIcon,
                            ...rest
                        }: ButtonProps) => {
-    const buttonState = Boolean(isLoading || disabled)
-    const buildClassName = cn(buttonCva({ size, color, kind, onlyIcon }), className)
+    const { pending } = useFormStatus()
+
+    const activeLoading = Boolean(isLoading || pending)
+    const buttonDisabled = Boolean(activeLoading || disabled)
 
     return (
         <button
-            disabled={buttonState}
-            className={buildClassName}
-            data-loading={isLoading ? "true" : "false"}
+            disabled={buttonDisabled}
+            className={cn(buttonCva({ size, color, kind, onlyIcon }), className)}
+            data-loading={activeLoading ? "true" : "false"}
             {...rest}
         >
-      <span
-          className={cn(
-              "inline-flex items-center justify-center gap-2",
-              "transition-opacity duration-150",
-              isLoading && "opacity-0",
-          )}
-      >
-        {children}
-      </span>
+            <span
+                className={cn(
+                    "inline-flex items-center justify-center gap-2",
+                    "transition-opacity duration-150",
+                    activeLoading && "opacity-0",
+                )}
+            >
+                {children}
+            </span>
 
-            {isLoading && (
+            {activeLoading && (
                 <span className="absolute inset-0 flex items-center justify-center">
-          <Loader className="animate-spin" size={16} />
-        </span>
+                    <Loader className="animate-spin" size={16} />
+                </span>
             )}
         </button>
     )
