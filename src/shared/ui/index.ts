@@ -9,5 +9,5 @@ export { Title } from "./title"
 
 /* Compound Components */
 export { Dropdown } from "./dropdown"
-export { InputElement } from "./input"
+export { Input } from "./input"
 export { PriorityNavigation, usePriorityContext } from "./priority-navigation"

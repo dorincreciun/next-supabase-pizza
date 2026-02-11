@@ -1,32 +1,14 @@
 'use server'
 
-import {createClient} from "@/shared/lib/supabase/server";
-import {RegisterState} from "@/features/auth/api/register-action";
+import { createClient } from "@/shared/lib/supabase/server";
+import { LoginFormProps } from "@/features/auth/model/types";
+import { AuthResponse,  } from "@supabase/auth-js";
 
-export interface LoginState {
-    success: boolean;
-    error: string | null;
-}
+export async function login({ email, password }: LoginFormProps): Promise<AuthResponse> {
+    const supabase = await createClient();
 
-export async function login(
-    prevState: RegisterState,
-    formData: FormData
-): Promise<RegisterState> {
-    try {
-        const supabase = await createClient()
-
-        const data = {
-            email: formData.get('email') as string,
-            password: formData.get('password') as string,
-        }
-
-        const {error} = await supabase.auth.signInWithPassword(data)
-        if (error) {
-            return {success: false, error: error.message};
-        }
-
-        return {success: true, error: null};
-    } catch (e) {
-        return {success: false, error: "A apărut o eroare neașteptată."};
-    }
+    return supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
 }
