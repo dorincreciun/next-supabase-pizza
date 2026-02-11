@@ -1,8 +1,12 @@
 import { ShoppingBag, User } from "lucide-react"
 import { Button, Container } from "@/shared/ui"
 import Link from "next/link";
+import {createClient} from "@/shared/lib/supabase/server";
+import {LogoutButton} from "@/features/auth/ui/logout-button";
 
-export const Header = () => {
+export const Header = async () => {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
     return (
         <header className={"border-b border-gray-200 py-10"}>
             <Container className={"flex items-center justify-between gap-4"}>
@@ -27,12 +31,13 @@ export const Header = () => {
                     <Button kind={"outline"} onlyIcon>
                         <ShoppingBag />
                     </Button>
-                    <Button>
-                        <User />
-                        <span className="max-md:hidden">Login</span>
-                    </Button>
-                    <Link href={'/login'}>login test</Link>
-                    <Link href={'/register'}>register test</Link>
+                    {/*<Button>*/}
+                    {/*    <User />*/}
+                    {/*    <span className="max-md:hidden">Login</span>*/}
+                    {/*</Button>*/}
+                    {
+                        user ? (<LogoutButton />) : <Link href={'/login'}>login test</Link>
+                    }
                 </div>
             </Container>
         </header>
